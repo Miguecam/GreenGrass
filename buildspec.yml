@@ -4,13 +4,16 @@ env:
   variables:
     LAMBDA_NAME: "labIoTGreengrassLambda"
 
+
 phases:
   build:
     commands:
+      - echo Restaurando paquetes y dependencias...
+      - dotnet tool install -g Amazon.Lambda.Tools
       - echo Desplegando función lambda...
-  
+      
       - |
-         if expr "${CODEBUILD_INITIATOR}" : "codepipeline/SC-LAMBDA-SECURITY-PL-DEV"; then
-           deploy-function $LAMBDA_NAME;
+         if expr "${CODEBUILD_INITIATOR}" : "codepipeline/Lambda-GreenGrass"; then
+           dotnet-lambda deploy-function $LAMBDA_NAME;
            echo Función lambda desplegada.;
          fi
