@@ -1,0 +1,16 @@
+version: 0.2
+
+env:
+  variables:
+    LAMBDA_NAME: "labIoTGreengrassLambda"
+
+phases:
+  build:
+    commands:
+      - echo Desplegando función lambda...
+  
+      - |
+         if expr "${CODEBUILD_INITIATOR}" : "codepipeline/SC-LAMBDA-SECURITY-PL-DEV"; then
+           deploy-function $LAMBDA_NAME;
+           echo Función lambda desplegada.;
+         fi
