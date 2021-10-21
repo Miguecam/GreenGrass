@@ -1,63 +1,36 @@
 version: 0.2
-env: 
-  variables: 
-    REPOSITORY_NAME: "Eafit"
-    SONARQUBE_USER_CREDENTIAL_SECRET: "SonarQubeUserSecret-M11asl5IJewH"
+env:
+  secrets-manager:
+    LOGIN: prod/sonar:sonartoken
+    HOST: prod/sonar:HOST
+    Organization: prod/sonar:Organization
+    Project: prod/sonar:Project
 
 phases:
   install:
     runtime-versions:
-      java: corretto11
-
+      nodejs: 10
     commands:
-      - apt-get update -y
-      - apt-get install -y maven
-      - pip3 install --upgrade awscli
+      - apt-get update
+      - apt-get install -y jq
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
+      - unzip ./sonar-scanner-cli-3.3.0.1492-linux.zip
+      - export PATH=$PATH:./sonar-scanner-3.3.0.1492-linux/bin/
 
   pre_build:
     commands:
-      - sonar_host_url="http://3.235.162.65:80"
-      - sonar_project_key="$REPOSITORY_NAME"
-      - sonar_username=$(aws secretsmanager get-secret-value --secret-id $SONARQUBE_USER_CREDENTIAL_SECRET | jq -r '.SecretString' | jq -r '.username')
-      - sonar_password=$(aws secretsmanager get-secret-value --secret-id $SONARQUBE_USER_CREDENTIAL_SECRET | jq -r '.SecretString' | jq -r '.password')
+      - sonar-scanner -Dsonar.organization=$Organization -Dsonar.projectKey=$Project -Dsonar.sources=src -Dsonar.host.url=$HOST -Dsonar.login=$LOGIN
+      - sleep 5
+      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project> analysis.json
+      - cat analysis.json
 
   build:
     commands:
-      - mvn install
-      - result=$(mvn clean sonar:sonar -Dsonar.projectKey=$sonar_project_key -Dsonar.host.url=$sonar_host_url -Dsonar.login=$sonar_username -Dsonar.password=$sonar_password)
-      - echo $result
       - echo Creando paquete...
       - zip -r my-deployment-package.zip . 
       - aws lambda update-function-code --function-name labIoTGreengrassLambda --zip-file fileb://my-deployment-package.zip
       - echo lambda actualizada
 
-  post_build:
-    commands:
-      - sonar_link=$(echo $result | egrep -o "you can browse http://[^, ]+")
-      - sonar_task_id=$(echo $result | egrep -o "task\?id=[^ ]+" | cut -d'=' -f2)
-      - | # Allow time for SonarQube Background Task to complete
-        stat="PENDING";
-        while [ "$stat" != "SUCCESS" ]; do
-          if [ $stat = "FAILED" ] || [ $stat = "CANCELLED" ]; then
-            echo "SonarQube task $sonar_task_id failed";
-            exit 1;
-          fi
-          stat=$(curl -u "$sonar_username:$sonar_password" $sonar_host_url/api/ce/task\?id=$sonar_task_id | jq -r '.task.status');
-          echo "SonarQube analysis status is $stat";
-          sleep 5;
-        done
-      - sonar_analysis_id=$(curl -u "$sonar_username:$sonar_password" $sonar_host_url/api/ce/task\?id=$sonar_task_id | jq -r '.task.analysisId')
-      - quality_status=$(curl -u "$sonar_username:$sonar_password" $sonar_host_url/api/qualitygates/project_status\?analysisId=$sonar_analysis_id | jq -r '.projectStatus.status')
-      - |
-        if [ $quality_status = "ERROR" ]; then
-          content=$(echo "SonarQube analysis complete. Quality Gate Failed.\n\nTo see why, $sonar_link");
-        elif [ $quality_status = "OK" ]; then
-          content=$(echo "SonarQube analysis complete. Quality Gate Passed.\n\nFor details, $sonar_link");
-          aws codecommit update-pull-request-approval-state --pull-request-id $PULL_REQUEST_ID --approval-state APPROVE --revision-id $REVISION_ID;
-        else
-          content="An unexpected error occurred while attempting to analyze with SonarQube.";
-        fi
-      - aws codecommit post-comment-for-pull-request --pull-request-id $PULL_REQUEST_ID --repository-name $REPOSITORY_NAME --before-commit-id $DESTINATION_COMMIT --after-commit-id $SOURCE_COMMIT --content "$content"
-
-artifacts:
-  files: '**/*'
+cache:
+  paths:
+    - "node_modules/**/*"
