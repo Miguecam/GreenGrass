@@ -13,7 +13,7 @@
 # express or implied. See the License for the specific language governing
 # permissions and limitations under the License.
 #
-#prueba 1 pipeline
+#prueba 1 pipeline github
 
 import greengrasssdk
 import json
