@@ -13,7 +13,7 @@
 # express or implied. See the License for the specific language governing
 # permissions and limitations under the License.
 #
-#prueba 3.1 pipeline github
+#prueba 3.2 pipeline Sonar
 
 import greengrasssdk
 import json
