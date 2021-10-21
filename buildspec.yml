@@ -1,7 +1,7 @@
 version: 0.2
 env:
-  secrets-manager:
-    REPOSITORY_NAME: Eafit
+  REPOSITORY_NAME: Eafit
+  SONARQUBE_USER_CREDENTIAL_SECRET: SonarQubeUserSecret-M11asl5IJewH
 
 phases:
   install:
@@ -19,7 +19,6 @@ phases:
       - sonar_project_key="$REPOSITORY_NAME"
       - sonar_username=$(aws secretsmanager get-secret-value --secret-id $SONARQUBE_USER_CREDENTIAL_SECRET | jq -r '.SecretString' | jq -r '.username')
       - sonar_password=$(aws secretsmanager get-secret-value --secret-id $SONARQUBE_USER_CREDENTIAL_SECRET | jq -r '.SecretString' | jq -r '.password')
-      - git checkout $SOURCE_COMMIT
 
   build:
     commands:
