@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.amazonaws.example</groupId>
-  <artifactId>PullRequestApproverBlogDemo</artifactId>
+  <artifactId>GreenGrass</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>PullRequestApproverBlogDemo</name>
-  <description>A simple PullRequestApproverBlogDemo.</description>
+  <name>GreenGrass</name>
+  <description>GreenGrass project.</description>
   <url>https://github.com/aws-samples/aws-codecommit-pull-request-approver-demo</url>
 
   <properties>
