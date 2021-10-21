@@ -10,7 +10,7 @@
 
   <name>GreenGrass</name>
   <description>GreenGrass project.</description>
-  <url>https://github.com/aws-samples/aws-codecommit-pull-request-approver-demo</url>
+  <!--<url>https://github.com/aws-samples/aws-codecommit-pull-request-approver-demo</url>-->
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
