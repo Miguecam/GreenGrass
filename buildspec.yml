@@ -1,12 +1,13 @@
 version: 0.2
-env:
-  REPOSITORY_NAME: Eafit
-  SONARQUBE_USER_CREDENTIAL_SECRET: SonarQubeUserSecret-M11asl5IJewH
+env: 
+  variables: 
+    REPOSITORY_NAME: "Eafit"
+    SONARQUBE_USER_CREDENTIAL_SECRET: "SonarQubeUserSecret-M11asl5IJewH"
 
 phases:
   install:
     runtime-versions:
-      java: openjdk11
+      java: corretto11
 
     commands:
       - apt-get update -y
