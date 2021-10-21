@@ -19,7 +19,7 @@ phases:
 
   pre_build:
     commands:
-      - sonar-scanner -Dsonar.organization=$Organization -Dsonar.projectKey=$Project -Dsonar.sources=src -Dsonar.host.url=$HOST -Dsonar.login=$LOGIN
+      - sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.projectKey=$Project -Dsonar.organization=$Organization
       - sleep 5
       - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project> analysis.json
       - cat analysis.json
