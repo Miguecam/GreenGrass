@@ -13,19 +13,15 @@ phases:
     commands:
       - apt-get update
       - apt-get install -y jq
-      - export SONAR_SCANNER_VERSION=4.4.0.2170
-      - export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
-      - curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
-      - unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
-      - export PATH=$SONAR_SCANNER_HOME/bin:$PATH
-      - export SONAR_SCANNER_OPTS="-server"
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
+      - unzip sonar-scanner-cli-3.3.0.1492-linux.zip
+      - export PATH=$PATH:./sonar-scanner-3.3.0.1492-linux/bin/
 
   build:      
     commands:
       - echo inicia Fase Build  ...
       - echo inicia mvn test...
-      - mvn test     
-      - mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.projectKey=$Project -Dsonar.organization=$Organization
+      - sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.projectKey=$Project -Dsonar.organization=$Organization
       - sleep 5
       - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$PROJECTKEY > analysis.json
       - cat analysis.json
