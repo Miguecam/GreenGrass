@@ -5,11 +5,11 @@
 
   <groupId>org.sonarsource.samples</groupId>
   <artifactId>python-custom-rules-plugin</artifactId>
-  <version>2.0-SNAPSHOT</version>
-  <packaging>sonar-plugin</packaging>
+  <version>3.7-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-  <name>Python Custom Rules Plugin</name>
-  <description>Python Custom Rules</description>
+  <name>GreenGrass</name>
+  <description>GreenGrass Python Custom Rules</description>
 
   <properties>
     <sonar.python.version>2.7</sonar.python.version> <!-- minimum version is 2.0, Custom Rules API is not available for 1.x -->
@@ -57,13 +57,71 @@
 
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <source>1.8</source>
+              <target>1.8</target>
+            </configuration>
+          </execution>
+          <execution>
+            <id>default-testCompile</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+            <configuration>
+              <source>1.8</source>
+              <target>1.8</target>
+            </configuration>
+          </execution>
+        </executions>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
       </plugin>
-    </plugins>
-  </build>
 
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>default-clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>default-testResources</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>testResources</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>default-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>   
+  </build>
 </project>
