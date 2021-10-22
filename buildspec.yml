@@ -9,7 +9,7 @@ env:
 phases:
   install:
     runtime-versions:
-      java: openjdk11
+      java: corretto11
     commands:
       - apt-get update
       - apt-get install -y jq
