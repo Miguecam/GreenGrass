@@ -12,68 +12,34 @@
   <description>GreenGrass Python Custom Rules</description>
 
   <properties>
-    <sonar.python.version>2.0.0.5043</sonar.python.version> <!-- minimum version is 2.0, Custom Rules API is not available for 1.x -->
+    <sonar.organization>ci-cd</sonar.organization>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
+      <version>7.9</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.sonarsource.sonarlint.core</groupId>
-      <artifactId>sonarlint-plugin-api</artifactId>
+      <groupId>org.sonarsource.python</groupId>
+      <artifactId>sonar-python-plugin</artifactId>
+      <type>sonar-plugin</type>
+      <version>${sonar.python.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.sonarsource.sonarqube</groupId>
-      <artifactId>sonar-plugin-api-impl</artifactId>
-      <version>${sonar.version}</version>
+      <groupId>org.sonarsource.python</groupId>
+      <artifactId>python-checks-testkit</artifactId>
+      <version>${sonar.python.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>python-frontend</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>python-checks</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.analyzer-commons</groupId>
-      <artifactId>sonar-analyzer-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.analyzer-commons</groupId>
-      <artifactId>sonar-xml-parsing</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.analyzer-commons</groupId>
-      <artifactId>sonar-performance-measure</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.sslr</groupId>
-      <artifactId>sslr-testing-harness</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.staxmate</groupId>
-      <artifactId>staxmate</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.sonarqube</groupId>
-      <artifactId>sonar-testing-harness</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -82,77 +48,81 @@
       <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
+        <version>1.18.0.372</version>
+        <extensions>true</extensions>
         <configuration>
-          <pluginName>Python Code Quality and Security</pluginName>
-          <pluginClass>org.sonar.plugins.python.PythonPlugin</pluginClass>
-          <skipDependenciesPackaging>true</skipDependenciesPackaging>
-          <sonarLintSupported>true</sonarLintSupported>
-          <sonarQubeMinVersion>${sonarQubeMinVersion}</sonarQubeMinVersion>
+          <pluginClass>org.sonar.samples.python.CustomPythonRulesPlugin</pluginClass>
+          <requirePlugins>python:${sonar.python.version}</requirePlugins>
         </configuration>
       </plugin>
 
       <plugin>
-        <artifactId>maven-shade-plugin</artifactId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
         <executions>
           <execution>
-            <phase>package</phase>
+            <id>default-compile</id>
+            <phase>compile</phase>
             <goals>
-              <goal>shade</goal>
+              <goal>compile</goal>
             </goals>
             <configuration>
-              <shadedArtifactAttached>false</shadedArtifactAttached>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <minimizeJar>true</minimizeJar>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/LICENSE*</exclude>
-                    <exclude>META-INF/NOTICE*</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>LICENSE*</exclude>
-                    <exclude>NOTICE*</exclude>
-                  </excludes>
-                </filter>
-                <filter>
-                <!--  Keeping all classes from python-frontend in case some class is not used (e.g. class is created for custom rules)  -->
-                <artifact>org.sonarsource.python:python-frontend</artifact>
-                <includes>
-                  <include>**</include>
-                </includes>
-              </filter>
-              </filters>
+              <source>1.8</source>
+              <target>1.8</target>
             </configuration>
+          </execution>
+          <execution>
+            <id>default-testCompile</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+            <configuration>
+              <source>1.8</source>
+              <target>1.8</target>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>default-clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
         <executions>
           <execution>
-            <id>enforce-plugin-size</id>
+            <id>default-testResources</id>
+            <phase>process-test-resources</phase>
             <goals>
-              <goal>enforce</goal>
+              <goal>testResources</goal>
             </goals>
-            <phase>verify</phase>
-            <configuration>
-              <rules>
-                <requireFilesSize>
-                  <maxsize>6500000</maxsize>
-                  <minsize>6000000</minsize>
-                  <files>
-                    <file>${project.build.directory}/${project.build.finalName}.jar</file>
-                  </files>
-                </requireFilesSize>
-              </rules>
-            </configuration>
+          </execution>
+          <execution>
+            <id>default-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
-    </plugins>
+    </plugins>   
   </build>
-
 </project>
