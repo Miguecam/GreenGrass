@@ -8,7 +8,7 @@ env:
 phases:
   install:
     runtime-versions:
-      java: corretto13
+      java: openjdk11
   pre_build:
     commands:
       - apt-get update
