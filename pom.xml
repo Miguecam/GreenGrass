@@ -12,8 +12,7 @@
   <description>GreenGrass Python Custom Rules</description>
 
   <properties>
-    <sonar.organization>ci-cd</sonar.organization>
-    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.python.version>2.0.0.5043</sonar.python.version> <!-- minimum version is 2.0, Custom Rules API is not available for 1.x -->
   </properties>
   <dependencies>
     <dependency>
